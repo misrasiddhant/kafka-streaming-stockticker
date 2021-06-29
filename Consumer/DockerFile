@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+FROM openjdk:8
+
+# Download Spark Client
+RUN curl https://downloads.apache.org/spark/spark-3.1.2/spark-3.1.2-bin-hadoop3.2.tgz --output spark.tgz
+RUN tar xzf spark.tgz
+RUN mv spark-3.1.2-bin-hadoop3.2/ /opt/spark
+
+# Setting Spark Home
+ENV SPARK_HOME=/opt/spark
+ENV PATH="${PATH}:$SPARK_HOME/bin:$SPARK_HOME/sbin"
+
+# Copy Spark Code to /opt/
+ADD ./spark_consumer.scala /opt/
+
+# Copy Shell script to /opt/
+ADD ./assignment_init.sh /opt/
+

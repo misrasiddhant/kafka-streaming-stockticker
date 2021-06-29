@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+FROM openjdk:8
+
+# Download KafkaClient
+RUN curl https://downloads.apache.org/kafka/2.8.0/kafka_2.12-2.8.0.tgz --output kafka.tgz
+RUN tar xzf kafka.tgz
+RUN mv kafka_2.12-2.8.0/ /opt/kafka
+
+
+# Download Maven
+RUN curl https://downloads.apache.org/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz --output mvn.tar.gz
+RUN tar xzf mvn.tar.gz
+RUN mv apache-maven-3.8.1/ /opt/mvn
+
+# Download Scala
+RUN curl https://downloads.lightbend.com/scala/2.12.14/scala-2.12.14.tgz --output scala-2.12.14.tgz
+RUN tar xzf scala-2.12.14.tgz
+RUN mv scala-2.12.14/ /opt/scala
+#RUN export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin:/opt/scala/bin:/opt/mvn/bin
+
+WORKDIR /opt
+RUN mkdir scala-producer
+RUN ls
+
+#Copy scala project
+ADD ./scala-producer/ /opt/scala-producer
+ADD ./assignment_init.sh /opt/
+
+#Adding Scala and Maven to environment variables
+ENV PATH="${PATH}:/opt/scala/bin:/opt/mvn/bin"
+WORKDIR /opt/scala-producer/
+
+#Generating Jar file
+RUN mvn clean package
